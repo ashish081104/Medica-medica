@@ -1,0 +1,1506 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Medica</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #00a884;
+            --primary-dark: #008f72;
+            --primary-light: #e6f7f4;
+            --accent-color: #4caf50;
+            --text-dark: #2c3e50;
+            --text-light: #ffffff;
+            --bg-light: #f8f9fa;
+            --sidebar-width: 250px;
+            --header-height: 60px;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            min-height: 100vh;
+            background: var(--bg-light);
+            color: var(--text-dark);
+        }
+
+        /* Sidebar */
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: var(--sidebar-width);
+            height: 100vh;
+            background: var(--primary-color);
+            color: var(--text-light);
+            padding: 1rem;
+            transition: all 0.3s ease;
+            z-index: 1000;
+            box-shadow: 4px 0 10px rgba(0,0,0,0.1);
+        }
+
+        .sidebar-header {
+            display: flex;
+            align-items: center;
+            padding: 1rem 0;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .logo-icon {
+            font-size: 2rem;
+            margin-right: 1rem;
+            color: var(--text-light);
+        }
+
+        .brand-name {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin: 0;
+            letter-spacing: 1px;
+        }
+
+        .nav-link {
+            color: rgba(255,255,255,0.9);
+            padding: 0.8rem 1rem;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            margin: 0.2rem 0;
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+        }
+
+        .nav-link:hover {
+            background: var(--primary-dark);
+            color: var(--text-light);
+            transform: translateX(5px);
+        }
+
+        .nav-link.active {
+            background: var(--text-light);
+            color: var(--primary-color);
+        }
+
+        .nav-link i {
+            margin-right: 1rem;
+            width: 20px;
+            text-align: center;
+        }
+
+        /* Main Content */
+        .main-content {
+            margin-left: var(--sidebar-width);
+            padding: 2rem;
+            padding-top: calc(var(--header-height) + 2rem);
+        }
+
+        /* Header */
+        .header {
+            position: fixed;
+            top: 0;
+            left: var(--sidebar-width);
+            right: 0;
+            height: var(--header-height);
+            background: var(--text-light);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 2rem;
+            z-index: 900;
+        }
+
+        .search-bar input {
+            border: none;
+            background: var(--bg-light);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            width: 300px;
+            transition: all 0.3s ease;
+        }
+
+        .search-bar input:focus {
+            outline: none;
+            box-shadow: 0 0 0 2px var(--primary-color);
+            width: 350px;
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .notifications {
+            position: relative;
+            cursor: pointer;
+        }
+
+        .notifications i {
+            font-size: 1.2rem;
+            color: var(--text-dark);
+        }
+
+        .notifications::after {
+            content: '';
+            position: absolute;
+            top: -2px;
+            right: -2px;
+            width: 8px;
+            height: 8px;
+            background: var(--accent-color);
+            border-radius: 50%;
+        }
+
+        .avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--primary-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-light);
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .avatar:hover {
+            transform: scale(1.1);
+        }
+
+        /* Cards */
+        .stat-card {
+            background: var(--text-light);
+            border-radius: 15px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            transition: all 0.3s ease;
+            border-left: 4px solid var(--primary-color);
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+        }
+
+        .stat-icon {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            color: var(--primary-color);
+            background: var(--primary-light);
+            width: 60px;
+            height: 60px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+            color: var(--text-dark);
+        }
+
+        .stat-label {
+            color: #6c757d;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* Tables */
+        .table-container {
+            background: var(--text-light);
+            border-radius: 15px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            margin-top: 2rem;
+        }
+
+        .table-container h3 {
+            color: var(--text-dark);
+            font-size: 1.2rem;
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid var(--primary-light);
+        }
+
+        .table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0 8px;
+        }
+
+        .table th {
+            background: var(--bg-light);
+            font-weight: 600;
+            padding: 12px;
+            text-align: left;
+            color: var(--text-dark);
+            text-transform: uppercase;
+            font-size: 0.85rem;
+            letter-spacing: 0.5px;
+        }
+
+        .table td {
+            padding: 12px;
+            background: white;
+            transition: all 0.3s ease;
+        }
+
+        .table tr:hover td {
+            background: var(--primary-light);
+        }
+
+        .table tr td:first-child {
+            border-top-left-radius: 8px;
+            border-bottom-left-radius: 8px;
+        }
+
+        .table tr td:last-child {
+            border-top-right-radius: 8px;
+            border-bottom-right-radius: 8px;
+        }
+
+        .status-badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .status-active {
+            background: #e3fcef;
+            color: #00a854;
+        }
+
+        .status-pending {
+            background: #fff7e6;
+            color: #fa8c16;
+        }
+
+        .status-badge::before {
+            content: '';
+            display: inline-block;
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: currentColor;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+
+            .main-content {
+                margin-left: 0;
+            }
+
+            .header {
+                left: 0;
+            }
+
+            .search-bar input {
+                width: 200px;
+            }
+
+            .search-bar input:focus {
+                width: 250px;
+            }
+
+            .sidebar.show {
+                transform: translateX(0);
+            }
+        }
+
+        .section-container {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 20px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .admission-form {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .admission-form label {
+            font-weight: 500;
+            color: #2c3e50;
+        }
+
+        .admission-form .form-control {
+            border-radius: 8px;
+            border: 1px solid #ddd;
+            padding: 8px 12px;
+        }
+
+        .admission-form .form-control:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 0.2rem rgba(0, 168, 132, 0.25);
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            border: none;
+            padding: 8px 20px;
+            border-radius: 8px;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--primary-dark);
+        }
+
+        .btn-secondary {
+            background-color: #6c757d;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 8px;
+        }
+
+        /* Appointment Form Styles */
+        .appointment-form {
+            background: var(--text-light);
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.1);
+            margin-top: 2rem;
+        }
+
+        .form-floating {
+            position: relative;
+            margin-bottom: 1.5rem;
+        }
+
+        .form-floating input,
+        .form-floating select,
+        .form-floating textarea {
+            height: 60px;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            padding: 1.5rem 1rem 0.5rem;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: var(--bg-light);
+        }
+
+        .form-floating textarea {
+            height: 120px;
+            resize: none;
+            padding-top: 2rem;
+        }
+
+        .form-floating input:focus,
+        .form-floating select:focus,
+        .form-floating textarea:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 4px var(--primary-light);
+            outline: none;
+        }
+
+        .form-floating label {
+            position: absolute;
+            top: 0;
+            left: 15px;
+            height: 100%;
+            padding: 1rem;
+            pointer-events: none;
+            transform: translateY(-0.5rem) scale(0.85);
+            transform-origin: 0 0;
+            transition: all 0.3s ease;
+            color: #6c757d;
+            background: transparent;
+        }
+
+        .form-floating input:placeholder-shown + label,
+        .form-floating select:placeholder-shown + label,
+        .form-floating textarea:placeholder-shown + label {
+            transform: translateY(0) scale(1);
+        }
+
+        .form-floating input:focus + label,
+        .form-floating select:focus + label,
+        .form-floating textarea:focus + label,
+        .form-floating input:not(:placeholder-shown) + label,
+        .form-floating select:not(:placeholder-shown) + label,
+        .form-floating textarea:not(:placeholder-shown) + label {
+            transform: translateY(-0.5rem) scale(0.85);
+            color: var(--primary-color);
+        }
+
+        .btn-submit {
+            background: linear-gradient(45deg, var(--primary-color), var(--accent-color));
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 12px;
+            font-weight: bold;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            width: 100%;
+            margin-top: 1rem;
+        }
+
+        .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .form-section {
+            background: white;
+            padding: 2rem;
+            border-radius: 15px;
+            margin-bottom: 1.5rem;
+        }
+
+        .form-section-title {
+            color: var(--primary-color);
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .form-section-title i {
+            font-size: 1.4rem;
+        }
+
+        .time-slots {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .time-slot {
+            padding: 0.8rem;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .time-slot:hover {
+            border-color: var(--primary-color);
+            background: var(--primary-light);
+        }
+
+        .time-slot.selected {
+            background: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+
+        /* Custom Radio Buttons */
+        .custom-radio {
+            display: flex;
+            gap: 1rem;
+            margin: 1rem 0;
+        }
+
+        .radio-option {
+            flex: 1;
+            position: relative;
+        }
+
+        .radio-option input {
+            display: none;
+        }
+
+        .radio-option label {
+            display: block;
+            padding: 1rem;
+            text-align: center;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .radio-option input:checked + label {
+            background: var(--primary-light);
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+        }
+
+        /* Sidebar Navigation */
+        .sidebar-nav {
+            margin-top: 2rem;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 1rem;
+            color: var(--text-light);
+            text-decoration: none;
+            border-radius: 8px;
+            margin-bottom: 0.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .nav-link:hover {
+            background: var(--primary-dark);
+            color: var(--text-light);
+        }
+
+        .nav-link.active {
+            background: var(--primary-dark);
+            color: var(--text-light);
+            font-weight: 500;
+        }
+
+        .nav-link i {
+            width: 24px;
+            margin-right: 0.75rem;
+            font-size: 1.1rem;
+        }
+
+        /* Section Containers */
+        .section-container {
+            display: none;
+            padding: 1.5rem;
+            background: var(--text-light);
+            border-radius: 12px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+        }
+
+        .stats-row {
+            display: flex;
+            flex-wrap: wrap;
+            margin: -0.5rem;
+            padding: 1rem;
+        }
+
+        /* Main Content Area */
+        .main-content {
+            margin-left: var(--sidebar-width);
+            padding: 2rem;
+            min-height: 100vh;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+
+            .main-content {
+                margin-left: 0;
+            }
+
+            .sidebar.show {
+                transform: translateX(0);
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <i class="fas fa-staff-snake logo-icon"></i>
+            <h3 class="ms-2">MEDICA</h3>
+        </div>
+        <nav class="sidebar-nav">
+            <a href="#" class="nav-link active" onclick="showSection('dashboard')">
+                <i class="fas fa-home"></i>
+                <span>Dashboard</span>
+            </a>
+            <a href="#" class="nav-link" onclick="showSection('doctors')">
+                <i class="fas fa-user-md"></i>
+                <span>Doctors</span>
+            </a>
+            <a href="#" class="nav-link" onclick="showSection('patients')">
+                <i class="fas fa-user-injured"></i>
+                <span>Patients</span>
+            </a>
+            <a href="#" class="nav-link" onclick="showSection('appointments')">
+                <i class="fas fa-calendar-check"></i>
+                <span>Appointments</span>
+            </a>
+            <a href="#" class="nav-link" onclick="showSection('beds')">
+                <i class="fas fa-bed"></i>
+                <span>Beds</span>
+            </a>
+            <a href="#" class="nav-link" onclick="showSection('settings')">
+                <i class="fas fa-cog"></i>
+                <span>Settings</span>
+            </a>
+        </nav>
+    </div>
+
+    <!-- Header -->
+    <header class="header">
+        <div class="search-bar">
+            <input type="text" placeholder="Search patients, doctors, or appointments...">
+            <i class="fas fa-search"></i>
+        </div>
+        <div class="user-profile">
+            <div class="dropdown">
+                <button class="btn btn-link dropdown-toggle text-dark" type="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                    <i class="fas fa-user-circle me-1"></i>
+                    <span id="userDisplayName">Loading...</span>
+                </button>
+                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                    <li><a class="dropdown-item" href="#"><i class="fas fa-user me-2"></i>Profile</a></li>
+                    <li><a class="dropdown-item" href="#"><i class="fas fa-cog me-2"></i>Settings</a></li>
+                    <li><hr class="dropdown-divider"></li>
+                    <li><a class="dropdown-item" href="#" onclick="handleLogout()"><i class="fas fa-sign-out-alt me-2"></i>Logout</a></li>
+                </ul>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Stats Row -->
+        <div class="row">
+            <div class="col-md-3 mb-4">
+                <div class="stat-card" onclick="showSection('appointments')">
+                    <div class="stat-icon">
+                        <i class="fas fa-calendar-check"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3 class="stat-value" data-stat="appointments">0</h3>
+                        <p class="stat-label">Appointments</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-4">
+                <div class="stat-card" onclick="showSection('patients')">
+                    <div class="stat-icon">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3 class="stat-value" data-stat="patients">0</h3>
+                        <p class="stat-label">Patients</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-4">
+                <div class="stat-card" onclick="showSection('doctors')">
+                    <div class="stat-icon">
+                        <i class="fas fa-user-md"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3 class="stat-value" data-stat="doctors">0</h3>
+                        <p class="stat-label">Doctors</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-4">
+                <div class="stat-card" onclick="showSection('beds')">
+                    <div class="stat-icon">
+                        <i class="fas fa-bed"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3 class="stat-value" data-stat="beds">0</h3>
+                        <p class="stat-label">Available Beds</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Patient Section -->
+        <div id="patientsSection" class="section-container" style="display: none;">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h3>Patient Management</h3>
+                <button type="button" class="btn btn-primary" onclick="togglePatientForm()">
+                    <i class="fas fa-plus"></i> Add New Patient
+                </button>
+            </div>
+
+            <!-- Patient Registration Form -->
+            <div id="patientForm" style="display: none;" class="mb-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h4 class="card-title">Patient Registration</h4>
+                        <form onsubmit="handlePatientSubmit(event)">
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Full Name</label>
+                                    <input type="text" class="form-control" name="name" required>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Age</label>
+                                    <input type="number" class="form-control" name="age" required>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Gender</label>
+                                    <select class="form-control" name="gender" required>
+                                        <option value="">Select Gender</option>
+                                        <option value="male">Male</option>
+                                        <option value="female">Female</option>
+                                        <option value="other">Other</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Contact Number</label>
+                                    <input type="tel" class="form-control" name="contact" required>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Email</label>
+                                    <input type="email" class="form-control" name="email" required>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Blood Group</label>
+                                    <select class="form-control" name="bloodGroup" required>
+                                        <option value="">Select Blood Group</option>
+                                        <option value="A+">A+</option>
+                                        <option value="A-">A-</option>
+                                        <option value="B+">B+</option>
+                                        <option value="B-">B-</option>
+                                        <option value="O+">O+</option>
+                                        <option value="O-">O-</option>
+                                        <option value="AB+">AB+</option>
+                                        <option value="AB-">AB-</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Address</label>
+                                    <textarea class="form-control" name="address" rows="2" required></textarea>
+                                </div>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Register Patient</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Patients List -->
+            <div class="card">
+                <div class="card-body">
+                    <h4 class="card-title">Registered Patients</h4>
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th scope="col">Name</th>
+                                    <th scope="col">Age</th>
+                                    <th scope="col">Gender</th>
+                                    <th scope="col">Contact</th>
+                                    <th scope="col">Blood Group</th>
+                                    <th scope="col">Last Visit</th>
+                                    <th scope="col">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="patientsTableBody">
+                                <!-- Patients will be loaded here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Doctors Section -->
+        <div id="doctorsSection" class="section-container" style="display: none;">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h3>Doctor Management</h3>
+                <button type="button" class="btn btn-primary" onclick="toggleDoctorForm()">
+                    <i class="fas fa-plus"></i> Add New Doctor
+                </button>
+            </div>
+
+            <!-- Doctor Registration Form -->
+            <div id="doctorForm" style="display: none;" class="mb-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h4 class="card-title">Doctor Registration</h4>
+                        <form onsubmit="handleDoctorSubmit(event)">
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Full Name</label>
+                                    <input type="text" class="form-control" name="name" required>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Specialization</label>
+                                    <input type="text" class="form-control" name="specialization" required>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Contact Number</label>
+                                    <input type="tel" class="form-control" name="contact" required>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Email</label>
+                                    <input type="email" class="form-control" name="email" required>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Schedule</label>
+                                    <select class="form-control" name="schedule" required>
+                                        <option value="">Select Schedule</option>
+                                        <option value="Morning">Morning</option>
+                                        <option value="Evening">Evening</option>
+                                        <option value="Both">Both</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Experience (Years)</label>
+                                    <input type="number" class="form-control" name="experience" required>
+                                </div>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Register Doctor</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Doctors List -->
+            <div class="card">
+                <div class="card-body">
+                    <h4 class="card-title">Hospital Doctors</h4>
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th scope="col">Name</th>
+                                    <th scope="col">Specialization</th>
+                                    <th scope="col">Schedule</th>
+                                    <th scope="col">Experience</th>
+                                    <th scope="col">Contact</th>
+                                    <th scope="col">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="doctorsTableBody">
+                                <!-- Doctors will be loaded here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Beds Section -->
+        <div id="bedsSection" class="section-container" style="display: none;">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h3>Bed Management</h3>
+                <button type="button" class="btn btn-primary" onclick="toggleBedForm()">
+                    <i class="fas fa-plus"></i> Add New Bed
+                </button>
+            </div>
+
+            <!-- Bed Registration Form -->
+            <div id="bedForm" style="display: none;" class="mb-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h4 class="card-title">Add New Bed</h4>
+                        <form onsubmit="handleBedSubmit(event)">
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Ward Number</label>
+                                    <input type="text" class="form-control" name="wardNumber" required>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Bed Number</label>
+                                    <input type="text" class="form-control" name="bedNumber" required>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Type</label>
+                                    <select class="form-control" name="type" required>
+                                        <option value="">Select Type</option>
+                                        <option value="General">General</option>
+                                        <option value="Private">Private</option>
+                                        <option value="ICU">ICU</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Status</label>
+                                    <select class="form-control" name="status" required>
+                                        <option value="available">Available</option>
+                                        <option value="occupied">Occupied</option>
+                                        <option value="maintenance">Under Maintenance</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Add Bed</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Beds List -->
+            <div class="card">
+                <div class="card-body">
+                    <h4 class="card-title">Hospital Beds</h4>
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th scope="col">Ward</th>
+                                    <th scope="col">Bed Number</th>
+                                    <th scope="col">Type</th>
+                                    <th scope="col">Status</th>
+                                    <th scope="col">Last Updated</th>
+                                </tr>
+                            </thead>
+                            <tbody id="bedsTableBody">
+                                <!-- Beds will be loaded here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Appointments Section -->
+        <div id="appointmentsSection" class="section-container" style="display: none;">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h3>Appointments</h3>
+                <button type="button" class="btn btn-primary" onclick="document.getElementById('appointmentForm').style.display='block'">
+                    <i class="fas fa-plus"></i> New Appointment
+                </button>
+            </div>
+
+            <!-- Appointment Form -->
+            <div id="appointmentForm" class="card mb-4" style="display: none;">
+                <div class="card-body">
+                    <h4>Book Appointment</h4>
+                    <form onsubmit="handleAppointmentSubmit(event)">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <div class="form-floating">
+                                    <input type="text" class="form-control" id="patientName" name="patientName" required>
+                                    <label for="patientName">Patient Name</label>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-floating">
+                                    <select class="form-control" id="doctor" name="doctor" required>
+                                        <option value="">Select Doctor</option>
+                                        <option value="Dr. Smith">Dr. Smith</option>
+                                        <option value="Dr. Johnson">Dr. Johnson</option>
+                                        <option value="Dr. Brown">Dr. Brown</option>
+                                    </select>
+                                    <label for="doctor">Select Doctor</label>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-floating">
+                                    <input type="date" class="form-control" id="appointmentDate" name="appointmentDate" required>
+                                    <label for="appointmentDate">Appointment Date</label>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-floating">
+                                    <select class="form-control" id="appointmentTime" name="appointmentTime" required>
+                                        <option value="">Select Time</option>
+                                        <option value="09:00">09:00 AM</option>
+                                        <option value="10:00">10:00 AM</option>
+                                        <option value="11:00">11:00 AM</option>
+                                        <option value="14:00">02:00 PM</option>
+                                        <option value="15:00">03:00 PM</option>
+                                        <option value="16:00">04:00 PM</option>
+                                    </select>
+                                    <label for="appointmentTime">Appointment Time</label>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="form-floating">
+                                    <textarea class="form-control" id="reason" name="reason" style="height: 100px"></textarea>
+                                    <label for="reason">Reason for Visit</label>
+                                </div>
+                            </div>
+                            <div class="col-12 text-end">
+                                <button type="button" class="btn btn-secondary me-2" onclick="document.getElementById('appointmentForm').style.display='none'">Cancel</button>
+                                <button type="submit" class="btn btn-primary">Book Appointment</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Appointments List -->
+            <div class="card">
+                <div class="card-body">
+                    <h4>Scheduled Appointments</h4>
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Patient Name</th>
+                                    <th>Doctor</th>
+                                    <th>Date</th>
+                                    <th>Time</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="appointmentsTableBody">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Appointments -->
+        <div id="recentAppointmentsSection" class="section-container">
+            <h3 class="mb-4">Recent Appointments</h3>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th scope="col">Patient Name</th>
+                        <th scope="col">Doctor</th>
+                        <th scope="col">Date</th>
+                        <th scope="col">Time</th>
+                        <th scope="col">Status</th>
+                    </tr>
+                </thead>
+                <tbody id="recentAppointmentsTableBody">
+                    <!-- Appointments will be dynamically populated here -->
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Available Doctors -->
+        <div id="doctorSection" class="section-container" style="display: none;">
+            <h3 class="mb-4">Available Doctors</h3>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th scope="col">Name</th>
+                        <th scope="col">Specialization</th>
+                        <th scope="col">Schedule</th>
+                        <th scope="col">Status</th>
+                    </tr>
+                </thead>
+                <tbody id="doctorsTable">
+                    <!-- Doctors will be loaded here -->
+                </tbody>
+            </table>
+        </div>
+    </main>
+
+    <script>
+        // Local storage keys
+        const KEYS = {
+            APPOINTMENTS: 'appointments',
+            PATIENTS: 'patients',
+            DOCTORS: 'doctors',
+            BEDS: 'beds'
+        };
+
+        // Initialize local storage with sample data if empty
+        function initializeData() {
+            if (!localStorage.getItem(KEYS.DOCTORS)) {
+                localStorage.setItem(KEYS.DOCTORS, JSON.stringify([]));
+            }
+            if (!localStorage.getItem(KEYS.APPOINTMENTS)) {
+                localStorage.setItem(KEYS.APPOINTMENTS, JSON.stringify([]));
+            }
+            if (!localStorage.getItem(KEYS.PATIENTS)) {
+                localStorage.setItem(KEYS.PATIENTS, JSON.stringify([]));
+            }
+            if (!localStorage.getItem(KEYS.BEDS)) {
+                localStorage.setItem(KEYS.BEDS, JSON.stringify([]));
+            }
+        }
+
+        // Initialize dashboard
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeData();
+            updateStats();
+            loadAllData();
+            // Show default section
+            showSection('dashboard');
+        });
+
+        function getData(key) {
+            return JSON.parse(localStorage.getItem(key) || '[]');
+        }
+
+        function saveData(key, data) {
+            localStorage.setItem(key, JSON.stringify(data));
+        }
+
+        // Toggle form visibility functions
+        function togglePatientForm() {
+            const form = document.getElementById('patientForm');
+            form.style.display = form.style.display === 'none' ? 'block' : 'none';
+        }
+
+        function toggleDoctorForm() {
+            const form = document.getElementById('doctorForm');
+            form.style.display = form.style.display === 'none' ? 'block' : 'none';
+        }
+
+        function toggleBedForm() {
+            const form = document.getElementById('bedForm');
+            form.style.display = form.style.display === 'none' ? 'block' : 'none';
+        }
+
+        // Load all data
+        function loadAllData() {
+            loadPatients();
+            loadDoctors();
+            loadBeds();
+            updateRecentAppointments();
+        }
+
+        // Update dashboard stats
+        function updateStats() {
+            try {
+                const appointments = getData(KEYS.APPOINTMENTS) || [];
+                const patients = getData(KEYS.PATIENTS) || [];
+                const doctors = getData(KEYS.DOCTORS) || [];
+                const beds = getData(KEYS.BEDS) || [];
+                
+                // Count active doctors
+                const activeDoctors = doctors.length;
+                
+                // Count available beds
+                const availableBeds = beds.filter(bed => bed.status !== 'occupied').length;
+
+                // Update stats using data attributes
+                document.querySelector('[data-stat="appointments"]').textContent = appointments.length;
+                document.querySelector('[data-stat="patients"]').textContent = patients.length;
+                document.querySelector('[data-stat="doctors"]').textContent = activeDoctors;
+                document.querySelector('[data-stat="beds"]').textContent = availableBeds;
+
+                console.log('Stats Updated:', {
+                    appointments: appointments.length,
+                    patients: patients.length,
+                    doctors: activeDoctors,
+                    availableBeds: availableBeds
+                });
+            } catch (error) {
+                console.error('Error updating stats:', error);
+            }
+        }
+
+        // Load and display patients
+        function loadPatients() {
+            const patients = getData(KEYS.PATIENTS);
+            const tableBody = document.getElementById('patientsTableBody');
+            
+            if (!tableBody) {
+                console.error('Patients table body not found');
+                return;
+            }
+
+            if (patients.length === 0) {
+                tableBody.innerHTML = '<tr><td colspan="7" class="text-center">No patients registered</td></tr>';
+                return;
+            }
+
+            tableBody.innerHTML = patients.map(patient => `
+                <tr>
+                    <td>${patient.name || '-'}</td>
+                    <td>${patient.age || '-'}</td>
+                    <td>${patient.gender || '-'}</td>
+                    <td>${patient.contact || '-'}</td>
+                    <td>${patient.bloodGroup || '-'}</td>
+                    <td>${new Date(patient.lastVisit).toLocaleDateString()}</td>
+                    <td><span class="badge bg-success">Active</span></td>
+                </tr>
+            `).join('');
+        }
+
+        // Load and display doctors
+        function loadDoctors() {
+            const doctors = getData(KEYS.DOCTORS);
+            const tableBody = document.getElementById('doctorsTableBody');
+            
+            if (doctors.length === 0) {
+                tableBody.innerHTML = '<tr><td colspan="6" class="text-center">No doctors registered</td></tr>';
+                return;
+            }
+
+            tableBody.innerHTML = doctors.map(doctor => `
+                <tr>
+                    <td>${doctor.name}</td>
+                    <td>${doctor.specialization}</td>
+                    <td>${doctor.schedule}</td>
+                    <td>${doctor.experience} years</td>
+                    <td>${doctor.contact}</td>
+                    <td><span class="badge bg-success">Active</span></td>
+                </tr>
+            `).join('');
+        }
+
+        // Load and display beds
+        function loadBeds() {
+            const beds = getData(KEYS.BEDS);
+            const tableBody = document.getElementById('bedsTableBody');
+            
+            if (beds.length === 0) {
+                tableBody.innerHTML = '<tr><td colspan="5" class="text-center">No beds registered</td></tr>';
+                return;
+            }
+
+            tableBody.innerHTML = beds.map(bed => `
+                <tr>
+                    <td>${bed.wardNumber}</td>
+                    <td>${bed.bedNumber}</td>
+                    <td>${bed.type}</td>
+                    <td><span class="badge bg-${getStatusColor(bed.status)}">${bed.status}</span></td>
+                    <td>${new Date(bed.lastUpdated).toLocaleString()}</td>
+                </tr>
+            `).join('');
+        }
+
+        function getStatusColor(status) {
+            switch(status.toLowerCase()) {
+                case 'available': return 'success';
+                case 'occupied': return 'warning';
+                case 'maintenance': return 'danger';
+                default: return 'secondary';
+            }
+        }
+
+        // Form submission handlers
+        async function handlePatientSubmit(event) {
+            event.preventDefault();
+            const form = event.target;
+            const formData = new FormData(form);
+            
+            const patient = {
+                id: Date.now(),
+                name: formData.get('name'),
+                age: formData.get('age'),
+                gender: formData.get('gender'),
+                contact: formData.get('contact'),
+                email: formData.get('email'),
+                bloodGroup: formData.get('bloodGroup'),
+                address: formData.get('address'),
+                registeredDate: new Date().toISOString(),
+                lastVisit: new Date().toISOString()
+            };
+
+            const patients = getData(KEYS.PATIENTS);
+            patients.push(patient);
+            saveData(KEYS.PATIENTS, patients);
+
+            form.reset();
+            togglePatientForm();
+            updateStats();
+            loadPatients();
+            showSection('patientsSection');
+            alert('Patient registered successfully!');
+        }
+
+        async function handleDoctorSubmit(event) {
+            event.preventDefault();
+            const form = event.target;
+            const formData = new FormData(form);
+            
+            const doctor = {
+                id: Date.now(),
+                name: formData.get('name'),
+                specialization: formData.get('specialization'),
+                contact: formData.get('contact'),
+                email: formData.get('email'),
+                schedule: formData.get('schedule'),
+                experience: formData.get('experience'),
+                status: 'active',
+                joinDate: new Date().toISOString()
+            };
+
+            const doctors = getData(KEYS.DOCTORS);
+            doctors.push(doctor);
+            saveData(KEYS.DOCTORS, doctors);
+
+            form.reset();
+            toggleDoctorForm();
+            updateStats();
+            loadDoctors();
+            showSection('doctorsSection');
+            alert('Doctor registered successfully!');
+        }
+
+        async function handleBedSubmit(event) {
+            event.preventDefault();
+            const form = event.target;
+            const formData = new FormData(form);
+            
+            const bed = {
+                id: Date.now(),
+                wardNumber: formData.get('wardNumber'),
+                bedNumber: formData.get('bedNumber'),
+                type: formData.get('type'),
+                status: formData.get('status'),
+                lastUpdated: new Date().toISOString()
+            };
+
+            const beds = getData(KEYS.BEDS);
+            beds.push(bed);
+            saveData(KEYS.BEDS, beds);
+
+            form.reset();
+            toggleBedForm();
+            updateStats();
+            loadBeds();
+            showSection('bedsSection');
+            alert('Bed added successfully!');
+        }
+
+        async function handleAppointmentSubmit(event) {
+            event.preventDefault();
+            const form = event.target;
+            const formData = new FormData(form);
+            
+            // Create new patient if not exists
+            const patientName = formData.get('patientName');
+            const email = formData.get('email');
+            const contact = formData.get('contact');
+            
+            let patients = getData(KEYS.PATIENTS) || [];
+            let existingPatient = patients.find(p => p.name === patientName && p.email === email);
+            
+            if (!existingPatient) {
+                const newPatient = {
+                    id: Date.now(),
+                    name: patientName,
+                    age: '',
+                    gender: '',
+                    email: email,
+                    contact: contact,
+                    bloodGroup: '',
+                    address: '',
+                    registeredDate: new Date().toISOString(),
+                    lastVisit: new Date().toISOString()
+                };
+                patients.push(newPatient);
+                saveData(KEYS.PATIENTS, patients);
+            } else {
+                // Update last visit for existing patient
+                existingPatient.lastVisit = new Date().toISOString();
+                saveData(KEYS.PATIENTS, patients);
+            }
+            
+            const appointment = {
+                id: Date.now(),
+                patientName: patientName,
+                email: email,
+                contact: contact,
+                date: formData.get('appointmentDate'),
+                doctor: formData.get('doctor'),
+                reason: formData.get('reason'),
+                status: 'scheduled',
+                createdAt: new Date().toISOString()
+            };
+
+            const appointments = getData(KEYS.APPOINTMENTS) || [];
+            appointments.push(appointment);
+            saveData(KEYS.APPOINTMENTS, appointments);
+
+            // Update all data and UI
+            form.reset();
+            updateStats(); // Update stats first
+            loadPatients(); // Then refresh the tables
+            loadAllData(); // Refresh all data
+            updateRecentAppointments();
+            showSection('patientsSection');
+            
+            console.log('Appointment Booked:', {
+                appointment,
+                totalAppointments: appointments.length,
+                totalPatients: patients.length
+            });
+            
+            alert('Appointment booked successfully!');
+        }
+
+        function showSection(sectionName) {
+            // Hide all sections
+            const sections = ['dashboard', 'doctors', 'patients', 'appointments', 'beds', 'settings'];
+            sections.forEach(section => {
+                const sectionElement = document.getElementById(section + 'Section');
+                if (sectionElement) {
+                    sectionElement.style.display = 'none';
+                }
+            });
+
+            // Show selected section
+            const selectedSection = document.getElementById(sectionName + 'Section');
+            if (selectedSection) {
+                selectedSection.style.display = 'block';
+            }
+
+            // Update active state in sidebar
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('onclick').includes(sectionName)) {
+                    link.classList.add('active');
+                }
+            });
+
+            // Load section data
+            switch(sectionName) {
+                case 'patients':
+                    loadPatients();
+                    break;
+                case 'doctors':
+                    loadDoctors();
+                    break;
+                case 'beds':
+                    loadBeds();
+                    break;
+                case 'appointments':
+                    loadAppointments();
+                    break;
+            }
+        }
+
+        // Set user display name from localStorage
+        window.onload = function() {
+            const userData = JSON.parse(localStorage.getItem('currentUser'));
+            if (userData && userData.fullname) {
+                document.getElementById('userDisplayName').textContent = userData.fullname;
+            } else {
+                // If no user data, redirect to login
+                window.location.href = '/login.html';
+            }
+            loadDashboardData();
+        }
+
+        // Logout function
+        function handleLogout() {
+            // Clear user data
+            localStorage.removeItem('currentUser');
+            localStorage.removeItem('token');
+            // Redirect to login page
+            window.location.href = '/login.html';
+        }
+
+        function updateRecentAppointments() {
+            const appointments = getData(KEYS.APPOINTMENTS);
+            const tableBody = document.getElementById('recentAppointmentsTableBody');
+            const recentAppointments = appointments.slice(-5).reverse();
+
+            if (recentAppointments.length === 0) {
+                tableBody.innerHTML = '<tr><td colspan="5" class="text-center">No appointments scheduled</td></tr>';
+                return;
+            }
+
+            tableBody.innerHTML = recentAppointments.map(appointment => `
+                <tr>
+                    <td>${appointment.patientName}</td>
+                    <td>${appointment.doctor}</td>
+                    <td>${new Date(appointment.date).toLocaleDateString()}</td>
+                    <td>${new Date(appointment.createdAt).toLocaleTimeString()}</td>
+                    <td><span class="badge bg-success">${appointment.status}</span></td>
+                </tr>
+            `).join('');
+        }
+    </script>
+</body>
+</html>

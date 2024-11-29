@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up - Medica</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --accent-color: #e74c3c;
+            --gradient-start: #3498db;
+            --gradient-end: #2c3e50;
+        }
+
+        body {
+            background: linear-gradient(135deg, var(--gradient-start) 0%, var(--gradient-end) 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .signup-container {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 0 30px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+            width: 100%;
+            max-width: 400px;
+            padding: 2rem;
+            transform: translateY(0);
+            transition: all 0.3s ease;
+        }
+
+        .signup-container:hover {
+            transform: translateY(-5px);
+        }
+
+        .logo-container {
+            text-align: center;
+            margin-bottom: 2rem;
+            position: relative;
+        }
+
+        .medical-logo {
+            font-size: 4rem;
+            background: linear-gradient(45deg, var(--accent-color), var(--primary-color));
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            margin-bottom: 1rem;
+            position: relative;
+            display: inline-block;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        .brand-name {
+            font-size: 2.5rem;
+            background: linear-gradient(45deg, var(--accent-color), var(--primary-color));
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+            letter-spacing: 2px;
+        }
+
+        .form-control {
+            border-radius: 10px;
+            padding: 0.8rem 1rem;
+            border: 2px solid #eee;
+            transition: all 0.3s ease;
+            background: rgba(255, 255, 255, 0.9);
+            margin-bottom: 1rem;
+        }
+
+        .form-control:focus {
+            border-color: var(--accent-color);
+            box-shadow: 0 0 0 0.2rem rgba(231, 76, 60, 0.25);
+            background: white;
+        }
+
+        .btn-signup {
+            background: linear-gradient(45deg, var(--accent-color), var(--primary-color));
+            border: none;
+            border-radius: 10px;
+            padding: 0.8rem;
+            color: white;
+            font-weight: bold;
+            width: 100%;
+            margin-top: 1rem;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-signup:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(231, 76, 60, 0.3);
+        }
+
+        .error-message {
+            color: var(--accent-color);
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="signup-container">
+        <div class="logo-container">
+            <i class="fas fa-staff-snake medical-logo"></i>
+            <div class="brand-name">MEDICA</div>
+        </div>
+        <form id="signupForm" onsubmit="handleSignup(event)">
+            <div class="mb-3">
+                <input type="text" class="form-control" id="fullname" placeholder="Full Name" required>
+            </div>
+            <div class="mb-3">
+                <input type="text" class="form-control" id="username" placeholder="Username" required>
+            </div>
+            <div class="mb-3">
+                <input type="password" class="form-control" id="password" placeholder="Password" required>
+            </div>
+            <div class="mb-3">
+                <input type="password" class="form-control" id="confirmPassword" placeholder="Confirm Password" required>
+            </div>
+            <div class="error-message" id="signupError"></div>
+            <button type="submit" class="btn btn-signup">Sign Up</button>
+            <div class="text-center mt-3">
+                <a href="login.html" class="text-decoration-none">Already have an account? Login</a>
+            </div>
+            <div class="loading"></div>
+        </form>
+    </div>
+
+    <script>
+        async function handleSignup(event) {
+            event.preventDefault();
+            
+            const fullname = document.getElementById('fullname').value;
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            const errorDiv = document.getElementById('signupError');
+            const loadingSpinner = document.querySelector('.loading');
+            
+            try {
+                loadingSpinner.style.display = 'inline-block';
+                errorDiv.style.display = 'none';
+                
+                // Validate password match
+                if (password !== confirmPassword) {
+                    errorDiv.textContent = 'Passwords do not match';
+                    errorDiv.style.display = 'block';
+                    return;
+                }
+
+                // Get existing users
+                const registeredUsers = JSON.parse(localStorage.getItem('registeredUsers')) || [];
+                console.log('Current registered users:', registeredUsers); // Debug log
+                
+                // Check if username already exists
+                if (registeredUsers.some(u => u.username === username)) {
+                    errorDiv.textContent = 'Username already exists';
+                    errorDiv.style.display = 'block';
+                    return;
+                }
+
+                // Create new user
+                const newUser = {
+                    fullname,
+                    username,
+                    password,
+                    role: 'user'
+                };
+                console.log('New user data:', newUser); // Debug log
+
+                // Add to registered users
+                registeredUsers.push(newUser);
+                localStorage.setItem('registeredUsers', JSON.stringify(registeredUsers));
+                console.log('Updated registered users:', registeredUsers); // Debug log
+                
+                // Show success message
+                alert('Registration successful! Please login.');
+                
+                // Redirect to login
+                window.location.href = 'login.html';
+            } catch (error) {
+                console.error('Signup Error:', error); // Debug log
+                errorDiv.textContent = 'An error occurred during signup';
+                errorDiv.style.display = 'block';
+            } finally {
+                loadingSpinner.style.display = 'none';
+            }
+        }
+
+        // Check if user is already logged in
+        window.onload = function() {
+            const currentUser = localStorage.getItem('currentUser');
+            if (currentUser) {
+                window.location.href = 'dashboard.html';
+            }
+        }
+    </script>
+</body>
+</html>
